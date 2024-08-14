@@ -82,6 +82,15 @@ class Board(object):
         # stores the flipped tiles at each move
         self.flipped = set()
 
+    def get_piece(self, row: int, col: int) -> str:
+        """
+        Returns the piece at the specified position.
+        :param row: int, the row index of the tile.
+        :param col: int, the column index of the tile.
+        :return: str, the piece at the given position ('B', 'W', or '.').
+        """
+        return self.tiles[row][col]
+
     @staticmethod
     def from_string(string: str) -> 'Board':
         """

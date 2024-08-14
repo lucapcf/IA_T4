@@ -37,8 +37,9 @@ def make_move(state) -> Tuple[int, int]:
     # Remova-o e coloque uma chamada para o minimax_move (que vc implementara' no modulo minimax).
     # A chamada a minimax_move deve receber sua funcao evaluate como parametro.
 
-    return random.choice([(2, 3), (4, 5), (5, 4), (3, 2)])
-
+    max_depth = 5  # Adjust depth to ensure moves are computed within 5 seconds.
+    best_move = minimax_move(state, max_depth, evaluate_mask)
+    return best_move
 
 def evaluate_mask(state, player:str) -> float:
     """
@@ -49,4 +50,17 @@ def evaluate_mask(state, player:str) -> float:
     :param state: state to evaluate (instance of GameState)
     :param player: player to evaluate the state for (B or W)
     """
-    return 0   # substitua pelo seu codigo
+    
+    opponent = 'B' if player == 'W' else 'W'
+    player_score = 0
+    opponent_score = 0
+
+    for row in range(8):
+        for col in range(8):
+            piece = state.board.get_piece(row, col)
+            if piece == player:
+                player_score += EVAL_TEMPLATE[row][col]
+            elif piece == opponent:
+                opponent_score += EVAL_TEMPLATE[row][col]
+
+    return player_score - opponent_score

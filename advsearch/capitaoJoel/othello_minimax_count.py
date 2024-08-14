@@ -4,13 +4,6 @@ from ..othello.gamestate import GameState
 from ..othello.board import Board
 from .minimax import minimax_move
 
-# Voce pode criar funcoes auxiliares neste arquivo
-# e tambem modulos auxiliares neste pacote.
-#
-# Nao esqueca de renomear 'your_agent' com o nome
-# do seu agente.
-
-
 def make_move(state) -> Tuple[int, int]:
     """
     Returns a move for the given game state
@@ -22,9 +15,9 @@ def make_move(state) -> Tuple[int, int]:
     # a primeira jogada 
     # Remova-o e coloque uma chamada para o minimax_move (que vc implementara' no modulo minimax).
     # A chamada a minimax_move deve receber sua funcao evaluate como parametro.
+    max_depth = 5  # Depth limit to ensure responsiveness.
 
-    return random.choice([(2, 3), (4, 5), (5, 4), (3, 2)])
-
+    return minimax_move(state, max_depth, evaluate_count)
 
 def evaluate_count(state, player:str) -> float:
     """
@@ -34,4 +27,9 @@ def evaluate_count(state, player:str) -> float:
     :param state: state to evaluate (instance of GameState)
     :param player: player to evaluate the state for (B or W)
     """
-    return 0   # substitua pelo seu codigo
+    
+    board = state.get_board()
+    player_count = board.num_pieces(player)
+    opponent = 'B' if player == 'W' else 'W'
+    opponent_count = board.num_pieces(opponent)
+    return player_count - opponent_count

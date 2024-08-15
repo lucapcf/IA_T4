@@ -14,19 +14,19 @@ def minimax_move(state, max_depth:int, eval_func:Callable) -> Tuple[int, int]:
     :return: (int, int) tuple with x, y coordinates of the move (remember: 0 is the first row/column)
     """
 
-    _, best_action = MAX(state, eval_func, max_depth, float('-inf'), float('inf'))
+    _, best_action = MAX(state, eval_func, max_depth, float('-inf'), float('inf'), state.player)
     return best_action
     
-def MAX(state, eval_func: Callable, depth: int, alpha: float, beta: float) -> Tuple[float, Tuple[int, int]]:
+def MAX(state, eval_func: Callable, depth: int, alpha: float, beta: float, player:str) -> Tuple[float, Tuple[int, int]]:
     if state.is_terminal() or depth == 0:
-        util = eval_func(state, state.player)
+        util = eval_func(state, player)
         return util, None
     
     v = float('-inf')
     best_action = None
     for action in state.legal_moves():
         successor = state.next_state(action)
-        v2, _ = MIN(successor, eval_func, depth - 1, alpha, beta)
+        v2, _ = MIN(successor, eval_func, depth - 1, alpha, beta, player)
         if v2 > v:
             v = v2
             best_action = action
@@ -36,15 +36,16 @@ def MAX(state, eval_func: Callable, depth: int, alpha: float, beta: float) -> Tu
     return v, best_action
 
 
-def MIN(state, eval_func: Callable, depth: int, alpha: float, beta: float) -> Tuple[float, Tuple[int, int]]:
+def MIN(state, eval_func: Callable, depth: int, alpha: float, beta: float, player:str) -> Tuple[float, Tuple[int, int]]:
     if state.is_terminal() or depth == 0:
-        return eval_func(state, state.player), None
+        util = eval_func(state, player)
+        return util, None
     
     v = float('inf')
     best_action = None
     for action in state.legal_moves():
         successor = state.next_state(action)
-        v2, _ = MAX(successor, eval_func, depth - 1, alpha, beta)
+        v2, _ = MAX(successor, eval_func, depth - 1, alpha, beta, player)
         if v2 < v:
             v = v2
             best_action = action

@@ -4,12 +4,6 @@ from ..tttm.gamestate import GameState
 from ..tttm.board import Board
 from .minimax import minimax_move
 
-# Voce pode criar funcoes auxiliares neste arquivo
-# e tambem modulos auxiliares neste pacote.
-#
-# Nao esqueca de renomear 'your_agent' com o nome
-# do seu agente.
-
 
 def make_move(state: GameState) -> Tuple[int, int]:
     """

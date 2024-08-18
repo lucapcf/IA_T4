@@ -4,7 +4,7 @@ from ..othello.gamestate import GameState
 from ..othello.board import Board
 from .minimax import minimax_move
 
-# Template de avaliação para valorizar posições estratégicas no tabuleiro.
+# Template de avaliação para valorizar posições estratégicas no tabuleiro
 EVAL_TEMPLATE = [
     [100, -30, 6, 2, 2, 6, -30, 100],
     [-30, -50, 1, 1, 1, 1, -50, -30],
@@ -21,31 +21,29 @@ evaluation_cache: Dict[str, float] = {}
 
 def make_move(state) -> Tuple[int, int]:
     """
-    Retorna a jogada para o estado atual do jogo.
-    :param state: Estado do jogo para fazer a jogada.
-    :return: (int, int) tupla com as coordenadas x, y da jogada (lembre-se: 0 é a primeira linha/coluna).
+    Returns a move for the given game state
+    :param state: state to make the move
+    :return: (int, int) tuple with x, y coordinates of the move (remember: 0 is the first row/column)
     """
-    max_depth = 5  # 
+    max_depth = 5
     return minimax_move(state, max_depth, evaluate_custom)
 
-def evaluate_custom(state, player: str) -> float:
+def evaluate_custom(state, player:str) -> float:
     """
-    Avalia o estado do jogo de Othello do ponto de vista do jogador especificado.
-    Se o estado é terminal, retorna a utilidade. Se não é terminal, retorna uma estimativa
-    baseada em uma heurística customizada que combina controle de cantos e bordas, 
-    vantagem em termos de número de peças, mobilidade, estabilidade e paridade.
-    
-    :param state: estado a ser avaliado (instância de GameState)
-    :param player: jogador para avaliar o estado (B ou W)
+    Evaluates an othello state from the point of view of the given player. 
+    If the state is terminal, returns its utility. 
+    If non-terminal, returns an estimate of its value based on your custom heuristic
+    :param state: state to evaluate (instance of GameState)
+    :param player: player to evaluate the state for (B or W)
     """
-    # Memoização para evitar reavaliações
+    # Memorização para evitar reavaliações
     state_str = str(state.board) + player
     if state_str in evaluation_cache:
         return evaluation_cache[state_str]
     
     opponent = 'B' if player == 'W' else 'W'
     
-    # Avaliação da posição no tabuleiro baseada no template.
+    # Avaliação da posição no tabuleiro baseada no template
     player_score = 0
     opponent_score = 0
     
@@ -59,32 +57,32 @@ def evaluate_custom(state, player: str) -> float:
 
     positional_score = player_score - opponent_score
 
-    # Avaliação baseada no controle de cantos.
+    # Avaliação baseada no controle de cantos
     player_corners = count_corners(state, player)
     opponent_corners = count_corners(state, opponent)
     corner_score = 100 * (player_corners - opponent_corners)
 
-    # Avaliação baseada no número total de peças.
+    # Avaliação baseada no número total de peças
     player_pieces = state.board.num_pieces(player)
     opponent_pieces = state.board.num_pieces(opponent)
     piece_score = player_pieces - opponent_pieces
 
-    # Avaliação baseada na mobilidade.
-    player_moves = len(state.board.legal_moves(player))  # Jogadas possíveis para o jogador atual
-    opponent_moves = len(state.board.legal_moves(opponent))  # Jogadas possíveis para o oponente
+    # Avaliação baseada na mobilidade
+    player_moves = len(state.board.legal_moves(player))
+    opponent_moves = len(state.board.legal_moves(opponent))
     mobility_score = 10 * (player_moves - opponent_moves)
 
-    # Avaliação baseada na estabilidade.
+    # Avaliação baseada na estabilidade
     player_stability = count_stable_pieces(state, player)
     opponent_stability = count_stable_pieces(state, opponent)
     stability_score = 50 * (player_stability - opponent_stability)
 
-    # Avaliação baseada na paridade.
+    # Avaliação baseada na paridade
     parity_score = 0
     if len(state.board.legal_moves(player)) % 2 == 0:
-        parity_score = 5  # Preferência por posições onde o número de jogadas restantes é par.
+        parity_score = 5  # Preferência por posições onde o número de jogadas restantes é par
 
-    # Combinação das heurísticas com pesos ajustados.
+    # Combinação das heurísticas com pesos ajustados
     score = positional_score + corner_score + 0.1 * piece_score + mobility_score + stability_score + parity_score
     evaluation_cache[state_str] = score
     return score
